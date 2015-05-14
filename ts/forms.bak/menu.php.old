@@ -1,0 +1,38 @@
+<?php 
+/********************************************************************/
+/* DYNAMIC MAIN MENU												*/
+/********************************************************************/
+
+include_once '../startup.php'; ?>
+<div class="navigation-bar dark">
+    <div class="navigation-bar-content container">
+        <!--<img src='http://c.hit.ua/hit?i=19154&amp;g=0&amp;x=2' border='0' style="width: 1px; height: 1px;"/>-->
+
+        <a href="/amts/" class="element"><span class="icon-grid-view"></span> TIME SHEET <sup>1.0</sup></a>
+
+        <span class="element-divider"></span>
+		
+		<?php echo $_form->getHtmlMenu(); ?>
+
+        <span class="element-divider place-right"></span>
+        <a title="Log Out" href="<?php echo HTTPS_SERVER; ?>actions/login.php?act=logout" class="element place-right" data-type="post"><span class="icon-unlocked"></span></a>
+        <span class="element-divider place-right"></span>
+        <a title="Change Password" href="#" class="element place-right"><span class="icon-key-2"></span></a>
+        <span class="element-divider place-right"></span>
+		<a title="Welcome" href="#" class="element place-right"><?php if ($_user->isLogged()) {  echo 'Welcome, '.$_user->getUserName(); } ?>
+		
+		</a>
+        <span class="element-divider place-right"></span>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+	$(function(){
+		pfw_prep_submit_button();
+	});
+</script>
+<div class="navigation-bar light fixed-bottom">
+<div class="navigation-bar-content container">
+<p class="code-text text-center">Copyright AndraMatin Architect</p>
+</div>
+</div>

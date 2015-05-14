@@ -1,0 +1,269 @@
+<?php
+function getMyOpenActivity($data){
+	global $_db, $_config, $_user;
+	
+	// Filters 
+	$filter_activity = isset($data['filter_activity']) && !empty($data['filter_activity'])? ' WHERE tasklist.name LIKE \'%'.$_db->escape($data['filter_activity']).'%\' OR tasklist.description LIKE \'%'.$_db->escape($data['filter_activity']).'%\' ' : '';
+	
+	// Paging
+	$page = isset($data['page']) && !empty($data['page'])? (int)$data['page'] : 1;
+	$max = (int) $_config->get('items_per_page')>0? (int) $_config->get('items_per_page') : 20;
+	$limit = "  LIMIT ".(($page-1)*$max).", ".$max;
+	
+	//get user id
+	$currentuserid = $_user->getId();
+
+	// Main Query
+	$user_query = $_db->query("	 select * from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from " . DB_PREFIX_APP . "phase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from " . DB_PREFIX_APP . "project pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from " . DB_PREFIX_APP . "project pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from " . DB_PREFIX_APP . "phase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM " . DB_PREFIX_APP . "task t WHERE t.activityid = a.activityid) AS actualhour
+	FROM " . DB_PREFIX_APP . "activity a WHERE a.projectid IN 
+	(
+		SELECT DISTINCT p.projectid FROM (
+			SELECT p1.projectID FROM amtsproject p1
+			WHERE p1.projectID IN (SELECT pm.projectID FROM " . DB_PREFIX_APP . "projectmembers pm WHERE pm.memberID = '". $currentuserid ."') 
+			UNION
+			SELECT p2.projectid FROM " . DB_PREFIX_APP . "project p2
+			WHERE p2.published = '1'
+		) AS p ORDER BY projectid
+	)) as tasklist
+		".$filter_activity.$limit);
+	
+	if ($user_query->num_rows) { 
+		return $user_query->rows;
+	} else {
+		return false;
+	}
+}
+
+
+function getMyOpenActivityTotal($data){
+	global $_db, $_config, $_user ; 
+	
+	// Filters 
+	$filter_activity = isset($data['filter_activity']) && !empty($data['filter_activity'])? ' AND a.name LIKE \'%'.$_db->escape($data['filter_activity']).'%\' OR a.description LIKE \'%'.$_db->escape($data['filter_activity']).'%\' ' : '';
+
+	//get user id
+	$currentuserid = $_user->getId();
+	
+	// Main Query
+	$opentask_query = $_db->query("SELECT COUNT(a.activityid) as total
+	FROM " . DB_PREFIX_APP . "activity a WHERE a.projectid IN 
+	(
+		SELECT DISTINCT p.projectid FROM (
+			SELECT p1.projectID FROM amtsproject p1
+			WHERE p1.projectID IN (SELECT pm.projectID FROM " . DB_PREFIX_APP . "projectmembers pm WHERE pm.memberID = '". $currentuserid ."') 
+			UNION
+			SELECT p2.projectid FROM " . DB_PREFIX_APP . "project p2
+			WHERE p2.published = '1'
+		) AS p ORDER BY projectid
+	) ".$filter_activity);
+	
+	if ($opentask_query->num_rows) { 
+		return $opentask_query->row['total'];
+	} else {
+		return 0;
+	}
+}
+
+
+function getActivityById($data){
+	global $_db, $_config, $_user ; 
+
+	// Filters 
+	$filter_activity = isset($data['activityid']) && !empty($data['activityid'])? ' WHERE tasklist.activityid ='.$_db->escape($data['activityid']) : '';
+
+	//get user id
+	$currentuserid = $_user->getId();
+
+	// Main Query
+	$activity_query = $_db->query("	 select * from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from " . DB_PREFIX_APP . "phase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from " . DB_PREFIX_APP . "project pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from " . DB_PREFIX_APP . "project pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from " . DB_PREFIX_APP . "phase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM " . DB_PREFIX_APP . "task t WHERE t.activityid = a.activityid) AS actualhour
+	FROM " . DB_PREFIX_APP . "activity a WHERE a.projectid IN 
+	(
+		SELECT DISTINCT p.projectid FROM (
+			SELECT p1.projectID FROM amtsproject p1
+			WHERE p1.projectID IN (SELECT pm.projectID FROM " . DB_PREFIX_APP . "projectmembers pm WHERE pm.memberID = '". $currentuserid ."') 
+			UNION
+			SELECT p2.projectid FROM " . DB_PREFIX_APP . "project p2
+			WHERE p2.published = '1'
+		) AS p ORDER BY projectid
+	)) as tasklist
+		".$filter_activity);
+
+	if ($activity_query->num_rows) { 
+		return $activity_query->row;
+	} else {
+		return false;
+	}
+	
+}
+
+
+function addTask($data) {
+	global $_db, $_user;
+	
+	$username = $_user->getUsername();
+	$userid =$_user->getId();
+	
+	$task_query = 
+		$_db->query("INSERT INTO " . DB_PREFIX_APP . "task SELECT MAX(TaskId)+1, 
+		'".$_db->escape($data['activity_id'])."', 
+		'".$_db->escape($data['task_date'])."',
+		'".$_db->escape(date("Y-m-d H:m:s", mktime($data['start_hour'], $data['start_min'], 0, 0, 0, 0)))."',   
+		'".$_db->escape(date("Y-m-d H:m:s", mktime($data['end_hour'], $data['end_min'], 0, 0, 0, 0)))."',   
+		'".$_db->escape($data['task_result'])."', 
+		'".$_db->escape($userid)."', 
+		'1', 
+		'".$_db->escape($userid)."',   
+		'".date('Y-m-d H:m:s')."' FROM " . DB_PREFIX_APP . "task ");
+	
+	return 1;
+}
+
+function getMyOpenTask($data){
+	global $_db, $_config, $_user;
+	
+	// Filters 
+	$filter_activity = isset($data['filter_activity']) && !empty($data['filter_activity'])? ' WHERE tasklist.name LIKE \'%'.$_db->escape($data['filter_activity']).'%\' OR tasklist.description LIKE \'%'.$_db->escape($data['filter_activity']).'%\' ' : '';
+	
+	// Paging
+	$page = isset($data['page']) && !empty($data['page'])? (int)$data['page'] : 1;
+	$max = (int) $_config->get('items_per_page')>0? (int) $_config->get('items_per_page') : 20;
+	$limit = "  LIMIT ".(($page-1)*$max).", ".$max;
+	
+	//get user id
+	$currentuserid = $_user->getId();
+
+		// Main Query
+	$opentask_query = $_db->query("
+SELECT p.phaseid,p.projectid,t.taskid, t.activityid, ifnull(t.startdate,'') as startdate, ifnull(t.timefrom,'') as timefrom,ifnull(t.timeto,'') as timeto, t.result, t.employeeid, t.status, ifnull(t.vcrea,'') as vcrea,ifnull(t.dcrea,'') as dcrea,
+(SELECT NAME FROM " . DB_PREFIX_APP . "project j WHERE j.projectid =p.projectid )AS projectname,
+(SELECT projectnumber FROM " . DB_PREFIX_APP . "project j WHERE j.projectid = p.projectid)AS projectnumber,
+(SELECT NAME FROM " . DB_PREFIX_APP . "phase j WHERE j.phaseid = p.phaseid AND j.projectid = p.projectid)AS phasename,
+a.name as activityname
+ FROM " . DB_PREFIX_APP . "task t, " . DB_PREFIX_APP . "activity a, " . DB_PREFIX_APP . "phase p
+ WHERE employeeid = 1
+ AND a.activityid = t.activityid
+ AND a.phaseid = p.phaseid AND a.projectid = p.projectid
+ AND t.status=1
+ ".$filter_activity.$limit);
+ 
+	
+	if ($opentask_query->num_rows) { 
+		return $opentask_query->rows;
+	} else {
+		return false;
+	}
+}
+
+function getMyOpenTaskById($data){
+	global $_db, $_config, $_user;
+	
+	// Filters 
+	$filter_activity = isset($data['filter_activity']) && !empty($data['filter_activity'])? ' WHERE tasklist.name LIKE \'%'.$_db->escape($data['filter_activity']).'%\' OR tasklist.description LIKE \'%'.$_db->escape($data['filter_activity']).'%\' ' : '';
+	
+	// Paging
+	$page = isset($data['page']) && !empty($data['page'])? (int)$data['page'] : 1;
+	$max = (int) $_config->get('items_per_page')>0? (int) $_config->get('items_per_page') : 20;
+	//$limit = "  LIMIT ".(($page-1)*$max).", ".$max;
+	
+	//get user id
+	$currentuserid = $_user->getId();
+
+		// Main Query
+	$opentask_query = $_db->query("
+SELECT p.phaseid,p.projectid,t.taskid, t.activityid, ifnull(t.startdate,'') as startdate, ifnull(t.timefrom,'') as timefrom,ifnull(t.timeto,'') as timeto, t.result, t.employeeid, t.status, ifnull(t.vcrea,'') as vcrea,ifnull(t.dcrea,'') as dcrea,
+(SELECT NAME FROM " . DB_PREFIX_APP . "project j WHERE j.projectid =p.projectid )AS projectname,
+(SELECT projectnumber FROM " . DB_PREFIX_APP . "project j WHERE j.projectid = p.projectid)AS projectnumber,
+(SELECT NAME FROM " . DB_PREFIX_APP . "phase j WHERE j.phaseid = p.phaseid AND j.projectid = p.projectid)AS phasename,
+a.name as activityname
+ FROM " . DB_PREFIX_APP . "task t, " . DB_PREFIX_APP . "activity a, " . DB_PREFIX_APP . "phase p
+ WHERE employeeid = 1
+ AND a.activityid = t.activityid
+ AND a.phaseid = p.phaseid AND a.projectid = p.projectid
+ AND t.status=1
+ and t.taskid = ".$data['taskid']."
+ ".$filter_activity." LIMIT 1");
+ 
+	
+	if ($opentask_query->num_rows) { 
+		return $opentask_query->row;
+	} else {
+		return false;
+	}
+}
+
+function getMyOpenTaskTotal($data){
+	global $_db, $_config, $_user ; 
+	
+	// Filters 
+	$filter_activity = isset($data['filter_activity']) && !empty($data['filter_activity'])? ' AND a.name LIKE \'%'.$_db->escape($data['filter_activity']).'%\' OR a.description LIKE \'%'.$_db->escape($data['filter_activity']).'%\' ' : '';
+
+	//get user id
+	$currentuserid = $_user->getId();
+	
+	// Main Query
+	$opentask_query = $_db->query("
+
+		SELECT count(taskid) as total
+		 FROM " . DB_PREFIX_APP . "task t, " . DB_PREFIX_APP . "activity a, " . DB_PREFIX_APP . "phase p
+		 WHERE employeeid = 1
+		 AND a.activityid = t.activityid
+		 AND a.phaseid = p.phaseid AND a.projectid = p.projectid
+		 AND t.status=1
+		 ".$filter_activity);
+
+
+	
+	if ($opentask_query->num_rows) { 
+		return $opentask_query->row['total'];
+	} else {
+		return 0;
+	}
+}
+
+function stopTask($data) {
+	global $_db, $_user;
+
+	$username = $_user->getUsername();
+	$userid =$_user->getId();
+	
+	$task_exist_query = $_db->query("SELECT COUNT(taskid) AS ada FROM " . DB_PREFIX_APP . "task WHERE taskid = ".$_db->escape($data['task_id'])." AND employeeid = ".$_db->escape($userid)."");
+	$isExist = false;
+	
+	if ($task_exist_query->num_rows){
+		if ($task_exist_query->row[ada]=='1'){
+			$isExist = true;
+		}
+	}
+	
+	if ($isExist)
+	{
+		$task_update_query = $_db->query("UPDATE " . DB_PREFIX_APP . "task SET timeto = '".$_db->escape(date("Y-m-d H:m:s", mktime($data['end_hour'], $data['end_min'], 0, 0, 0, 0)))."',
+		result = '".$_db->escape($data['task_result'])."' WHERE taskid = ".$_db->escape($data['task_id'])." AND employeeid = ".$_db->escape($userid)."");
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+	
+}
+
+?>

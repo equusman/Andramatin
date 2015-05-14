@@ -1,0 +1,34 @@
+<?php
+// GLOBALS
+define('HTTP_SERVER', 'http://localhost:81/phpfw/');
+define('HTTPS_SERVER', 'http://localhost:81/phpfw/');
+define('DEFAULT_TIMEZONE', 'Asia/Jakarta');
+define('DATEPICKER_FORMAT', 'yyyy-mm-dd');
+
+// DIR
+define('DIR_APPLICATION', 'D:\wamp\www\phpfw/');
+define('DIR_SYSTEM', 'D:\wamp\www\phpfw/');
+define('DIR_DATABASE', 'D:\wamp\www\phpfw/database/');
+define('DIR_IMAGE', 'D:\wamp\www\phpfw/image/');
+define('DIR_LOGS', 'D:\wamp\www\phpfw/logs/');
+
+// DB
+define('DB_DRIVER', 'mysql');
+define('DB_HOSTNAME', 'localhost');
+define('DB_USERNAME', 'root');
+define('DB_PASSWORD', '');
+define('DB_DATABASE', 'langit_php');
+define('DB_PREFIX', 'phpfw_');
+define('DB_PREFIX_APP', 'am_ts_');
+
+// COMMON MESSAGES
+define('MSG_TASK_NOT_AUTHORIZED', 'You are not authorized to do this task.');
+define('MSG_ERROR_OCCURED', 'An error has occured. Please try again later.');
+define('MSG_SELECT_ITEM', 'Please select one or more items.');
+define('MSG_ADD_ITEM_SUCCESS', "Items added successfully. <br/>Refreshing data in %d seconds, or hit browser's refresh button...");
+define('MSG_EDIT_ITEM_SUCCESS', "Items updated successfully. <br/>Refreshing data in %d seconds, or hit browser's refresh button...");
+define('MSG_DELETE_ITEM_SUCCESS', "Items deleted successfully. <br/>Refreshing data in %d seconds, or hit browser's refresh button...");
+define('MSG_ERROR_FIELDS', "The following error has occured.");
+
+
+?>

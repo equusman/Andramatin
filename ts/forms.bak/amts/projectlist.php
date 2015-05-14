@@ -1,0 +1,177 @@
+<?php
+include '../../startup.php';
+include '../header.php';
+
+include '../../model/project.php';
+include '../../model/user.php';
+
+$params = array();
+if (isset($_GET['filter_project'])) {
+	$params['filter_project'] = $_GET['filter_project'];
+} else {
+	$params['filter_project'] = '';
+}
+
+if (isset($_GET['page'])) {
+	$params['page'] = $_GET['page'];
+} else {
+	$params['page'] = 1;
+}
+
+if (isset($_GET['status_filter'])) {
+	$params['status_filter'] = $_GET['status_filter'];
+} else {
+	$params['status_filter'] = 1;
+}
+
+$projectlist = getProjectList($params);
+
+$_pagination->page = $params['page'];
+$_pagination->total = getProjectTotal($params);
+
+//debug 
+if  (isset($_GET['debug'])) {
+	$params['debug'] = (int)$_GET['debug'];
+
+	if (($params['debug'] !== null)&&($params['debug'] !== "1"))
+	{
+        echo '<pre>';
+		print_r($projectlist);
+		//print_r($_GET);
+		//print_r($_POST);
+		echo '----';
+        print_r($params['filter_project']);
+		echo '----';
+        print_r($params['status_filter']);
+		echo '----';
+		print_r($params['page']);
+        echo  '</pre>';
+
+	}
+	
+}		
+		
+		
+?>
+<h1><a href="projectlist.php" ><i class="icon-arrow-left-3 fg-darkRed"></i></a>
+    Project <small class="on-right">List</small>
+</h1>
+<div id="message-bar" ></div>
+<div class="button-bar">
+	<?php if ($_form->userHasFunction('add')) { ?>
+	<button type="button" class="input-btn btn-main dark" data-link="projectnew.php">
+		<div class="icon icon-plus-2 icon-l"></div>
+		<div class="icon-label">Add New Project</div>
+	</button>
+	<?php } ?>
+</div>
+<div class="filter-block">
+	<form id="frm1" class="view-list" method="post" action="../../actions/amts/projectlist.php">
+	<table>
+		<tr>
+			<th>Project </th>
+			<td class="searchbar01">
+				<div class="input-control text" data-role="input-control">
+					<input type="text" id="filter_project" name="filter_project" placeholder="type text" value="<?php echo $params['filter_project']; ?>">
+					<button class="btn-clear" tabindex="-1"></button>
+				</div>
+				<div class="input-control select" style=" width: 50%; ">
+					<select id="status_filter" name="status_filter">
+						<option value="all" <?php if ($params['status_filter']=='all'){echo "selected";}?>>All Status</option>
+						<option value="open" <?php if ($params['status_filter']=='open'){echo "selected";}?>>Open Only</option>
+					</select>
+				</div>
+				<button type="submit" class="input-btn btn-main" >
+					<div class="icon icon-search icon-l"></div>
+					<div class="icon-label">Search</div>
+				</button>
+			</td>
+		</tr>	
+	</table>	
+	</form>
+</div>
+
+<div class="pagination">
+	<?php echo $_pagination->render(); ?>
+</div>
+<!--  STARTTABLE -->				
+                    <div id="projectlisttable"></div>
+                    <script>
+                        function checkRow(el){
+                            $(el).parents("tr").toggleClass("selected");
+                        }
+
+                        function checkAll(el){
+                            var state = el.checked;
+                            $(el).parents("table").find("tbody [type=checkbox]").each(function(index){
+                                $(this).prop("checked", state);
+                                if (state) {
+                                    $(this).parents("tr").addClass("selected");
+                                } else {
+                                    $(this).parents("tr").removeClass("selected");
+                                }
+                            });
+
+                        }
+
+                        var table, table_data;
+
+                        table_data = [<?php
+							if ($projectlist!==false) {
+								foreach ($projectlist as $row) {
+									if ($row['phaseid']=="X")
+									{
+										?>{projectnumber:"<strong><?php echo $row['projectnumber'];?></strong>",projectname:"<strong><?php echo $row['projectname'];?></strong>",phase:"",estimated:"<strong><?php echo $row['est'];?></strong>",actual:"<strong><?php echo $row['actual']*8;?></strong>",status:"<strong><?php echo getStatus($row['status']);?></strong>",edit:"<?php 	/*if ($row['actual']=="0" && (int)$row['status']<3) { */ echo "<a href=editproject.php?project=".$row['projectid'].">Edit</a>";/*}*/?>",activity:" "},<?php
+									}
+									else
+									{
+										?>{projectnumber:"",projectname:"",phase:"<?php echo $row['phase'];?>",estimated:"<?php echo $row['est'];?>",actual:"<?php echo $row['actual']*8;?>",status:"<?php echo getStatus($row['status']);?>",edit:" <?php 	if ((int)$row['status']<3) { ?><a href='projectclosing.php?project=<?php echo $row['projectid'];?>&phase=<?php echo $row['phaseid'];?>'>Finish</a><?php } ?>",activity:"<a href='activity.php?project=<?php echo $row['projectid'];?>&phase=<?php echo $row['phaseid'];?>'>Task Offered</a>"},<?php										
+									}
+								}
+							}
+						?>
+                        ];
+
+                        $(function(){
+                            table = $("#projectlisttable").tablecontrol({
+                                cls: 'table hovered border myClass',
+                                checkRow: true,
+                                colModel: [
+									//{field: 'checkAll', caption: '<input type="checkbox" class="checkAllToggle"  data-children="checkItemToggle" value="<?php echo $row['projectid']; ?>" onclick="pfw_checkAll(this)" />', width: '10', sortable: false, cls: 'text-center', hcls: ""},
+									{field: 'projectnumber', caption: 'Project Number', width: '100', sortable: false, cls: 'text-center', hcls: ""},
+									{field: 'projectname', caption: 'Name', width: '100', sortable: false, cls: 'text-center', hcls: ""},
+									{field: 'phase', caption: 'Phase', width: '100', sortable: false, cls: 'text-center', hcls: ""},
+									{field: 'estimated', caption: 'Estimated', width: '100', sortable: false, cls: 'text-center', hcls: ""},
+									{field: 'actual', caption: 'Planned Hour', width: '100', sortable: false, cls: 'text-center', hcls: ""},
+									{field: 'status', caption: 'Status', width: '100', sortable: false, cls: 'text-center', hcls: ""},
+									{field: 'edit', caption: 'Edit', width: '100', sortable: false, cls: 'text-center', hcls: ""},
+									{field: 'activity', caption: 'Tasks', width: '100', sortable: false, cls: 'text-center', hcls: ""},
+									],
+
+                                data: table_data
+                            });
+                        });
+ 
+                    </script>
+<!--  ENDTABLE -->				
+<div class="pagination">
+	<?php echo $_pagination->render(); ?>
+</div>
+
+
+<script type="text/javascript">
+	$(function(){
+		$('#btnDelete').click(function(){
+			if (confirm("You are going to delete "+$('.checkItemToggle:checked').length+" item(s).\nAre you sure?")) {
+				var dt = '';
+				$('.checkItemToggle:checked').each(function(){
+					dt += (dt==''?'':',')+$(this).val();
+				});
+				//console.log(dt);
+				$('input[name="ids"]').val(dt);
+				$('#btnDelForm').click();
+			}
+		});
+	});
+</script>
+<?php include '../footer.php'; ?>

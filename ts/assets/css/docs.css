@@ -1,0 +1,100 @@
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color : rgb(194, 194, 194);
+}
+header {
+  height: 45px;
+}
+.metro .page {
+  width: 980px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.description {
+  margin: 10px 0;
+}
+.show-grid .row [class*="span"] {
+  line-height: 40px;
+  background: rgba(193, 179, 123, 0.52);
+  text-align: center;
+  min-height: 10px !important;
+}
+.color-stack li,
+#icon-list li {
+  margin-bottom: 5px;
+}
+.example > img {
+  margin: 5px;
+  display: inline-block;
+}
+.example .image-container {
+  margin: 10px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.myClass thead tr {
+  background-color: #1ba1e2;
+  color: #ffffff;
+}
+.amts-menu {
+  background-color : transparent;
+	top: 300px;
+	width:70%;
+	margin:0 auto;
+	padding: 3px;
+}
+.menuspace{
+	background-color : transparent;
+	padding-top:30px;
+	clear : both;
+}
+
+.amts-form1 {
+  background-color : transparent;
+	top: 300px;
+	width:70%;
+	margin:0 auto;
+	padding: 3px;
+}
+
+.amts-columnar {
+	background: transparent !important;
+	width:60%;
+	margin: 0 auto;
+
+}
+
+.amts-form > img {
+  margin: 5px;
+  display: inline-block;
+}
+
+.amts-form .example {
+	width:70%;
+	margin:auto;
+	overflow : auto !important;
+
+}
+
+.overflowing {
+	overflow : auto !important;
+
+}
+
+.verticaltop{
+vertical-align:top;
+}
+
+.amts-form .image-container {
+  margin: 10px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.metro .navigation-bar .navigation-bar-content .element > a.dropdown-toggle.full:after {
+position: absolute;
+left: 80%;
+bottom:initial;
+}

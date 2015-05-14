@@ -1,0 +1,275 @@
+<?php
+function getProject($data){
+	global $_db, $_config;
+	
+	// Filters 
+	$filter_username = isset($data['filter_username']) && !empty($data['filter_username'])? ' WHERE vusername LIKE \'%'.$_db->escape($data['filter_username']).'%\' OR vdisplayname LIKE \'%'.$_db->escape($data['filter_username']).'%\' ' : '';
+	
+	// Paging
+	$page = isset($data['page']) && !empty($data['page'])? (int)$data['page'] : 1;
+	$max = (int) $_config->get('items_per_page')>0? (int) $_config->get('items_per_page') : 20;
+	$limit = "  LIMIT ".(($page-1)*$max).", ".$max;
+	
+	// Main Query
+	$user_query = $_db->query("SELECT vuserid, vusername, vdisplayname, IF (SYSDATE() BETWEEN dbegineff AND dlasteff, 'active','inactive') AS `status` FROM " . DB_PREFIX . "mstusers ".$filter_username.$limit);
+	
+	if ($user_query->num_rows) { 
+		return $user_query->rows;
+	} else {
+		return false;
+	}
+}
+
+function getProjectActivity($id){
+	global $_db;
+	//die("SELECT * FROM " . DB_PREFIX_APP . "activity ac WHERE ac.projectid = '".(int) $id['project']."' AND ac.phaseid = '".(int) $id['phase']."'");
+	// Main Query
+	$user_query = $_db->query("SELECT * FROM " . DB_PREFIX_APP . "activity ac WHERE ac.projectid = '".(int) $id['project']."' AND ac.phaseid = '".(int) $id['phase']."'");	
+	if ($user_query->num_rows) { 
+		return $user_query->rows;
+	} else {
+		return false;
+	}
+}
+
+function getProjectById($id){
+	global $_db;
+	// Main Query
+	$user_query = $_db->query("SELECT 
+		pr.projectid,pr.projectnumber,pr.name prname,
+		pr.description prdesc,pr.projectmanager,pr.startdate,
+		pr.estimatedmanhour,pr.status,pr.published,pr.version,pr.baseline,
+		pr.contractamount,pr.idcurrency,ph.phaseid,ph.name phname,
+		ph.description phdesc,ph.estimatedmanhour phestimatedmanhour,ph.status phstatus
+		FROM " . DB_PREFIX_APP . "project pr, " . DB_PREFIX_APP . "phase ph WHERE pr.projectid = ph.projectid AND pr.projectid = '".(int) $id['project']."' AND ph.phaseid = '".(int) $id['phase']."'");
+	
+	if ($user_query->num_rows) { 
+		return $user_query->row;
+	} else {
+		return false;
+	}
+}
+
+function deleteProject($proj_id){
+	global $_db, $_config;
+	// Main Query
+	$user_query = $_db->query("DELETE FROM " . DB_PREFIX_APP . "project WHERE projectid IN (".$_db->escape($proj_id).")");
+	return 1;
+}
+
+function addProject($data) {
+	global $_db, $_user;
+	$user_query = 
+		$_db->query("INSERT INTO " . DB_PREFIX_APP . "project SELECT MAX(ProjectID)+1, 
+		'".$_db->escape($data['project_number'])."', 
+		'".$_db->escape($data['project_name'])."',
+		'".$_db->escape($data['project_desc'])."', 
+		'".$_db->escape($data['project_manager'])."', 
+		'".$_db->escape($data['startdate'])."', 
+		'".$_db->escape($data['estimatedmanhour'])."', 
+		'1', 
+		'1', 
+		'1',  
+		'1', 
+		'".$_db->escape($data['contractamount'])."', 
+		'".$_db->escape($data['currency'])."'  FROM " . DB_PREFIX_APP . "project ");
+	
+	$pmx_query = $_db->query("SELECT MAX(ProjectID) as mx FROM " . DB_PREFIX_APP . "project");	
+	$id = (int)$pmx_query->row['mx'];	
+	if (isset($data['member']) && (count($data['member'])>0)) {
+		foreach($data['member'] as $item) {
+			$_db->query("INSERT INTO " . DB_PREFIX_APP . "projectmembers VALUES('".$id."','".$item."') ");
+		}
+	}	
+	
+	if (isset($data['phasename']) && (count($data['phasename'])>0)) {
+		for($a=0; $a<count($data['phasename']); $a++) {
+			$v1 = $_db->escape($data['phasename'][$a]);
+			$v2 = isset($data['phasedesc'][$a])? $_db->escape($data['phasedesc'][$a]) : '';
+			$v3 = isset($data['phasemd'][$a])? $_db->escape($data['phasemd'][$a]) : '';
+			$_db->query("INSERT INTO " . DB_PREFIX_APP . "phase VALUES('".($a+1)."','".$id."','".$v1."','".$v2."','".$v3."','1') ");
+		}
+	}	
+	
+	return 1;
+}
+
+function editProject($data) {
+	global $_db, $_user;
+
+	// $qpasswd = '';
+	// if (!empty($data['password'])) $qpasswd = " vpassword = SHA1('".$_db->escape($data['password'])."'), ";
+	$user_query = $_db->query("UPDATE " . DB_PREFIX_APP . "project SET  
+		projectnumber = '".$_db->escape($data['project_number'])."', 
+		name = '".$_db->escape($data['project_name'])."', 
+		description = '".$_db->escape($data['project_desc'])."', 
+		projectmanager = '".$_db->escape($data['project_manager'])."', 
+		estimatedmanhour = '".$_db->escape($data['estimatedmanhour'])."', 
+		contractamount = '".$_db->escape($data['contractamount'])."', 
+		idcurrency = '".$_db->escape($data['currency'])."', 
+		startdate = '".$_db->escape($data['startdate'])."' 
+		WHERE projectid = '".(int)$data['project_id']."'");
+
+
+	$fk1 = $_db->escape($data['project_id']);
+	$maxphase = $_db->query("SELECT IFNULL(MAX(phaseid),0) as mx FROM " . DB_PREFIX_APP . "phase WHERE projectid = '". $fk1 ."'");	
+	$id = (int)$maxphase->row['mx'];	
+
+	
+	
+	$_db->query("DELETE FROM " . DB_PREFIX_APP . "projectmembers WHERE projectid =  '". $fk1 ."' ");
+		
+	if (isset($data['member']) && (count($data['member'])>0)) {
+		for($a=0; $a<count($data['member']); $a++) {
+			$v1 = $_db->escape($data['member'][$a]);
+			$_db->query("INSERT INTO " . DB_PREFIX_APP . "projectmembers VALUES('".$fk1."','".$v1."') ");
+		}
+	}			
+		
+	if (isset($data['phasename']) && (count($data['phasename'])>0)) {
+		for($a=0; $a<count($data['phasename']); $a++) {
+			$p1 = $_db->escape($data['phasename'][$a]);
+			$p2 = $_db->escape($data['phasedesc'][$a]);
+			$p3 = $_db->escape($data['phasemd'][$a]);
+			$_db->query("INSERT INTO " . DB_PREFIX_APP . "phase VALUES('".($id+$a+1)."','".$fk1."','".$p1."','".$p2."','".$p3."','1') ");
+		}
+	}			
+
+		
+	return 1;
+}
+
+function getProjectTotal($data){
+	global $_db, $_config;
+	
+	// Filters 
+	$filter_project = isset($data['filter_project']) && !empty($data['filter_project'])? ' WHERE name LIKE \'%'.$_db->escape($data['filter_project']).'%\' OR description LIKE \'%'.$_db->escape($data['filter_project']).'%\' OR projectnumber LIKE \'%'.$_db->escape($data['filter_project']).'%\' ' : '';
+	
+	// Main Query
+	$project_query = $_db->query("SELECT COUNT(projectid) AS total FROM " . DB_PREFIX_APP . "project ".$filter_project);
+	
+	if ($project_query->num_rows) { 
+		return $project_query->row['total'];
+	} else {
+		return 0;
+	}
+}
+
+function getProjectList($data){
+	global $_db;
+
+	// Filters 
+	$filter_project = isset($data['filter_project']) && !empty($data['filter_project'])? 'WHERE prj.projectname LIKE \'%'.$_db->escape($data['filter_project']).'%\' OR prj.description LIKE \'%'.$_db->escape($data['filter_project']).'%\' OR prj.projectnumber LIKE \'%'.$_db->escape($data['filter_project']).'%\' ' : ' ';
+	// Main Query
+	$user_query = $_db->query("SELECT * FROM (
+		SELECT 1 AS tag, pr.projectid, 'X' AS phaseid, pr.projectnumber, pr.name AS projectname,pr.description, ' ' AS phase, 		
+		pr.estimatedmanhour AS est, (SELECT IFNULL(SUM(TIMESTAMPDIFF(DAY,amt.schedulestart,amt.scheduleend)),0) 		
+		FROM " . DB_PREFIX_APP . "activity amt WHERE amt.phaseid IN (SELECT pha.phaseid FROM " . DB_PREFIX_APP . "phase pha 
+		WHERE pha.projectid = pr.projectid) AND amt.projectid = pr.projectid) AS actual, pr.status AS status 
+		FROM " . DB_PREFIX_APP . "project AS pr WHERE ProjectNumber IS NOT NULL 		
+		UNION 		
+		SELECT 2 AS tag, pr.projectid, ph.phaseid, pr.projectnumber, ' ' AS projectname,pr.description, ph.name AS phase, ph.estimatedmanhour AS est, 		
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(DAY,amt.schedulestart,amt.scheduleend)),0) FROM amtsactivity amt WHERE amt.phaseid = ph.phaseid 		
+		AND amt.projectid = pr.projectid) AS actual, '' AS status 		FROM " . DB_PREFIX_APP . "project AS pr, amtsphase AS ph 		
+		WHERE ProjectNumber IS NOT NULL 		
+		AND pr.projectid = ph.projectid 		
+		ORDER BY projectid, tag	, projectid, phaseid
+		) AS prj ".$filter_project." ");
+	
+	if ($user_query->num_rows) { 
+		return $user_query->rows;
+	} else {
+		return false;
+	}
+}
+
+function getProjectDetailByID($data){
+	global $_db;
+	
+	// Main Query
+	$user_query = $_db->query("SELECT 	pr.ProjectID, 
+	pr.ProjectNumber, 
+	pr.Name, 
+	pr.Description, 
+	pr.ProjectManager, 
+	pr.StartDate, 
+	pr.EstimatedManHour, 
+	pr.Status, 
+	pr.Published, 
+	pr.version, 
+	pr.baseline, 
+	pr.ContractAmount, 
+	pr.idcurrency
+	FROM 
+	" . DB_PREFIX_APP . "project pr
+	WHERE projectID = ".$_db->escape($data['project']));
+	
+	if ($user_query->num_rows) { 
+		return $user_query->row;
+	} else {
+		return false;
+	}
+}
+
+function getProjectPhaseByID($data){
+	global $_db;
+	
+	// Main Query
+	$user_query = $_db->query("SELECT 	ph.PhaseID, 
+	ph.ProjectID, 
+	ph.NAME, 
+	ph.Description, 
+	ph.EstimatedManHour, 
+	ph.STATUS
+	FROM 
+	" . DB_PREFIX_APP . "phase ph 
+	WHERE ProjectID = ".$_db->escape($data['project']));
+	
+	if ($user_query->num_rows) { 
+		return $user_query->rows;
+	} else {
+		return false;
+	}
+}
+
+function getPhaseDetail($data){
+	global $_db;
+	
+	// Main Query
+	$user_query = $_db->query("SELECT 	ph.PhaseID, 
+	ph.ProjectID, 
+	ph.NAME, 
+	ph.Description, 
+	ph.EstimatedManHour, 
+	ph.STATUS
+	FROM 
+	" . DB_PREFIX_APP . "phase ph 
+	WHERE ProjectID = ".$_db->escape($data['project'])."
+	AND PhaseID = ".$_db->escape($data['phase']));
+	
+	
+	if ($user_query->num_rows) { 
+		return $user_query->row;
+	} else {
+		return false;
+	}
+}
+
+
+function getProjectMemberByID($data){
+	global $_db;
+	
+	// Main Query
+	$user_query = $_db->query("SELECT pm.projectid,pm.memberid,u.vuserid,u.vusername,u.vdisplayname  FROM " . DB_PREFIX_APP . "projectmembers pm
+LEFT JOIN " . DB_PREFIX . "mstusers u ON pm.memberid=u.vuserid
+WHERE pm.projectid =  ".$_db->escape($data['project']));
+	
+	if ($user_query->num_rows) { 
+		return $user_query->rows;
+	} else {
+		return false;
+	}
+}
+
+
+?>

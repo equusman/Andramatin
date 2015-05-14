@@ -1,0 +1,1 @@
+ErrorDocument 404 '/phpfw/404.php'
