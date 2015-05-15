@@ -1,4 +1,5 @@
 <?php
+//perubahan test github for windows
 // GLOBALS
 define('HTTP_SERVER', 'http://localhost:81/phpfw/');
 define('HTTPS_SERVER', 'http://localhost:81/phpfw/');
