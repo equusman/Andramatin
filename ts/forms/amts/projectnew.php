@@ -73,6 +73,15 @@ include '../../model/currency.php';
 		</td>
 	</tr>
 	<tr>
+		<th>End Date (estimated)*</th>
+		<td colspan=2>
+			<div class="input-control text" data-role="datepicker" data-format="<?php echo DATEPICKER_FORMAT; ?>">
+				<input type="text" name="enddate" value="">
+				<button class="btn-date" tabindex="-1" type="button"></button>
+			</div>
+		</td>
+	</tr>
+	<tr>
 		<th>Estimated Man Hour *</th>
 		<td colspan=2>
 			<div class="input-control text" data-role="input-control">

@@ -6430,3 +6430,24 @@ ORDER BY dateschedule.tanggal,dateschedule.userid in D:\wampserver\www\phpfw_deb
 2015-02-23 9:51:11 - PHP Warning:  Missing argument 1 for getAllUsers(), called in C:\wamp\www\ts\forms\amts\projectnew.php on line 58 and defined in C:\wamp\www\ts\model\user.php on line 23
 2015-05-12 10:45:33 - PHP Warning:  Missing argument 1 for getAllUsers(), called in C:\wamp\www\ts\forms\amts\projectnew.php on line 58 and defined in C:\wamp\www\ts\model\user.php on line 23
 2015-05-12 14:14:50 - PHP Warning:  Missing argument 1 for getAllUsers(), called in C:\wamp\www\ts\forms\amts\editproject.php on line 88 and defined in C:\wamp\www\ts\model\user.php on line 23
+2015-05-17 10:09:14 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\projectnew.php on line 58 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
+2015-05-17 10:19:23 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\projectnew.php on line 58 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
+2015-05-17 10:19:59 - PHP Notice:  Undefined variable: _post in D:\wampserver\www\Andramatin\ts\actions\amts\projectnew.php on line 13
+2015-05-17 10:19:59 - PHP Notice:  Error: Cannot add or update a child row: a foreign key constraint fails (`langit_php`.`amtsproject`, CONSTRAINT `projectmanager_users` FOREIGN KEY (`ProjectManager`) REFERENCES `phpfw_mstusers` (`vuserID`) ON DELETE NO ACTION ON UPDATE NO ACTION)<br />Error No: 1452<br />INSERT INTO amtsproject SELECT MAX(ProjectID)+1, 
+		'', 
+		'',
+		'', 
+		'', 
+		'', 
+		'', 
+		'', 
+		'1', 
+		0, 
+		'1',  
+		'1', 
+		'', 
+		''  FROM amtsproject  in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51
+2015-05-17 10:44:25 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\projectnew.php on line 58 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
+2015-05-17 10:45:14 - PHP Notice:  Undefined variable: _post in D:\wampserver\www\Andramatin\ts\actions\amts\projectnew.php on line 13
+2015-05-17 10:47:18 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\projectnew.php on line 58 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
+2015-05-17 20:50:46 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\projectnew.php on line 58 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23

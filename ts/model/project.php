@@ -67,13 +67,13 @@ function deleteProject($proj_id){
 function addProject($data) {
 	global $_db, $_user;
 	$pub = isset($data['published']) && ($data['published']=='1') ? '1' : '0';
-	$user_query = 
-		$_db->query("INSERT INTO " . DB_PREFIX_APP . "project SELECT MAX(ProjectID)+1, 
+	die("INSERT INTO " . DB_PREFIX_APP . "project SELECT MAX(ProjectID)+1, 
 		'".$_db->escape($data['project_number'])."', 
 		'".$_db->escape($data['project_name'])."',
 		'".$_db->escape($data['project_desc'])."', 
 		'".$_db->escape($data['project_manager'])."', 
 		'".$_db->escape($data['startdate'])."', 
+		'".$_db->escape($data['enddate'])."', 
 		'".$_db->escape($data['estimatedmanhour'])."', 
 		'1', 
 		".$pub.", 
@@ -81,7 +81,23 @@ function addProject($data) {
 		'1', 
 		'".$_db->escape($data['contractamount'])."', 
 		'".$_db->escape($data['currency'])."'  FROM " . DB_PREFIX_APP . "project ");
-	
+		
+	$user_query = 
+		$_db->query("INSERT INTO " . DB_PREFIX_APP . "project SELECT MAX(ProjectID)+1, 
+		'".$_db->escape($data['project_number'])."', 
+		'".$_db->escape($data['project_name'])."',
+		'".$_db->escape($data['project_desc'])."', 
+		'".$_db->escape($data['project_manager'])."', 
+		'".$_db->escape($data['startdate'])."', 
+		'".$_db->escape($data['enddate'])."', 
+		'".$_db->escape($data['estimatedmanhour'])."', 
+		'1', 
+		".$pub.", 
+		'1',  
+		'1', 
+		'".$_db->escape($data['contractamount'])."', 
+		'".$_db->escape($data['currency'])."'  FROM " . DB_PREFIX_APP . "project ");
+
 	$pmx_query = $_db->query("SELECT MAX(ProjectID) as mx FROM " . DB_PREFIX_APP . "project");	
 	$id = (int)$pmx_query->row['mx'];	
 	if (isset($data['member']) && (count($data['member'])>0)) {
