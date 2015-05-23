@@ -1,7 +1,8 @@
 <?php
 // GLOBALS
-define('HTTP_SERVER', 'http://192.168.0.151/ts/');
-define('HTTPS_SERVER', 'http://192.168.0.151/ts/');
+// setting khusus localhost / github base
+define('HTTP_SERVER', 'http://localhost:88/Andramatin/ts/');
+define('HTTPS_SERVER', 'http://localhost:88/Andramatin/ts/');
 
 // setting khusus untuk andramatin
 //define('HTTP_SERVER', 'http://192.168.0.120:81/phpfw/');
@@ -10,12 +11,19 @@ define('HTTPS_SERVER', 'http://192.168.0.151/ts/');
 define('DEFAULT_TIMEZONE', 'Asia/Jakarta');
 define('DATEPICKER_FORMAT', 'yyyy-mm-dd');
 
+// DIR khusus andramatin
+// define('DIR_APPLICATION', 'C:\wamp\www\ts/');
+// define('DIR_SYSTEM', 'C:\wamp\www\ts/');
+// define('DIR_DATABASE', 'C:\wamp\www\ts/database/');
+// define('DIR_IMAGE', 'C:\wamp\www\ts/image/');
+// define('DIR_LOGS', 'C:\wamp\www\ts/logs/');
+
 // DIR
-define('DIR_APPLICATION', 'C:\wamp\www\ts/');
-define('DIR_SYSTEM', 'C:\wamp\www\ts/');
-define('DIR_DATABASE', 'C:\wamp\www\ts/database/');
-define('DIR_IMAGE', 'C:\wamp\www\ts/image/');
-define('DIR_LOGS', 'C:\wamp\www\ts/logs/');
+define('DIR_APPLICATION', 'D:\wampserver\www\Andramatin\ts/');
+define('DIR_SYSTEM', 'D:\wampserver\www\Andramatin\ts/');
+define('DIR_DATABASE', 'D:\wampserver\www\Andramatin\ts/database/');
+define('DIR_IMAGE', 'D:\wampserver\www\Andramatin\ts/image/');
+define('DIR_LOGS', 'D:\wampserver\www\Andramatin\ts/logs/');
 
 // DB
 define('DB_DRIVER', 'mysql');
