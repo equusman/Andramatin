@@ -10,10 +10,10 @@ switch ($_act) {
 		if ($_form->userHasFunction('add')) {
 			$val = validateInput();
 			if ($val=='ok') {
-				$res = addproject($_POST);
+				$res = addProject($_POST);
 				$_response['status'] = 1;
-				$_response['message'] = sprintf(msg_add_item_success,3);
-				$_response['redirect'] = https_server.'forms/amts/projectlist.php';
+				$_response['message'] = sprintf(MSG_ADD_ITEM_SUCCESS,3);
+				$_response['redirect'] = HTTPS_SERVER.'forms/amts/projectlist.php';
 				$_response['redirect-time'] = 3000;
 			} else {
 				$_response['status'] = 0;

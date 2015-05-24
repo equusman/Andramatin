@@ -67,20 +67,20 @@ function deleteProject($proj_id){
 function addProject($data) {
 	global $_db, $_user;
 	$pub = isset($data['published']) && ($data['published']=='1') ? '1' : '0';
-	die("INSERT INTO " . DB_PREFIX_APP . "project SELECT MAX(ProjectID)+1, 
-		'".$_db->escape($data['project_number'])."', 
-		'".$_db->escape($data['project_name'])."',
-		'".$_db->escape($data['project_desc'])."', 
-		'".$_db->escape($data['project_manager'])."', 
-		'".$_db->escape($data['startdate'])."', 
-		'".$_db->escape($data['enddate'])."', 
-		'".$_db->escape($data['estimatedmanhour'])."', 
-		'1', 
-		".$pub.", 
-		'1',  
-		'1', 
-		'".$_db->escape($data['contractamount'])."', 
-		'".$_db->escape($data['currency'])."'  FROM " . DB_PREFIX_APP . "project ");
+//	die("INSERT INTO " . DB_PREFIX_APP . "project SELECT MAX(ProjectID)+1, 
+		// '".$_db->escape($data['project_number'])."', 
+		// '".$_db->escape($data['project_name'])."',
+		// '".$_db->escape($data['project_desc'])."', 
+		// '".$_db->escape($data['project_manager'])."', 
+		// '".$_db->escape($data['startdate'])."', 
+		// '".$_db->escape($data['enddate'])."', 
+		// '".$_db->escape($data['estimatedmanhour'])."', 
+		// '1', 
+		// ".$pub.", 
+		// '1',  
+		// '1', 
+		// '".$_db->escape($data['contractamount'])."', 
+		// '".$_db->escape($data['currency'])."'  FROM " . DB_PREFIX_APP . "project ");
 		
 	$user_query = 
 		$_db->query("INSERT INTO " . DB_PREFIX_APP . "project SELECT MAX(ProjectID)+1, 
@@ -159,7 +159,8 @@ function editProject($data) {
 		contractamount = '".$_db->escape($data['contractamount'])."', 
 		published = '".$pub."',
 		idcurrency = '".$_db->escape($data['currency'])."', 
-		startdate = '".$_db->escape($data['startdate'])."' 
+		startdate = '".$_db->escape($data['startdate'])."', 
+		enddate = '".$_db->escape($data['enddate'])."' 		
 		WHERE projectid = '".(int)$data['project_id']."'");
 
 
@@ -330,6 +331,7 @@ function getProjectDetailByID($data){
 	pr.Description, 
 	pr.ProjectManager, 
 	pr.StartDate, 
+	pr.EndDate,
 	pr.EstimatedManHour, 
 	pr.Status, 
 	pr.Published, 
