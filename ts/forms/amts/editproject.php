@@ -106,6 +106,7 @@ if  (isset($_GET['debug'])) {
 		<th>End Date (estimated)*</th>
 		<td colspan=2>
 			<div class="input-control text" data-role="datepicker" data-format="<?php echo DATEPICKER_FORMAT; ?>">
+				<input type="text" name="enddate" value="<?php echo $project['EndDate'];?>">
 				<button class="btn-date" tabindex="-1" type="button"></button>
 			</div>
 		</td>
