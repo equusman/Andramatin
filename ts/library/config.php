@@ -6,6 +6,10 @@ class Config {
     	return (isset($this->data[$key]) ? $this->data[$key] : null);
   	}	
 	
+  	public function all() {
+    	return $this->data;
+  	}	
+	
 	public function set($key, $value) {
     	$this->data[$key] = $value;
   	}

@@ -85,7 +85,7 @@ include '../../model/currency.php';
 		<th>Estimated Man Hour *</th>
 		<td colspan=2>
 			<div class="input-control text" data-role="input-control">
-				<input type="text" name="estimatedmanhour" value="">
+				<input type="text" name="estimatedmanhour" value="" onblur="calculatePhases()">
 				<button class="btn-clear" tabindex="-1"></button>
 			</div>
 		</td>
@@ -228,11 +228,17 @@ include '../../model/currency.php';
 					var phasename = $('.txt_phasename',prt).val();
 					var phasedesc = $('.txt_phasedesc',prt).val();
 					var phaseintv = $('.txt_phaseint',prt).val();
-					var data = $('<tr><td class="text-left" style="width: 20px;"></td><td class="text-left" style="width: 100px;">'+phasename+'</td><td class="text-left" style="width: 40px;">'+phaseintv+'</td><td class="text-left" style="width: 30px;"><a class="icon-arrow-up" onclick="moveRowUp(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-arrow-down" onclick="moveRowDown(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-cancel-2 icon-red" href="#" onclick="removeRow(this); return false;" ></a><input type="hidden" name="phasename[]" value="'+phasename+'" /><input type="hidden" name="phasedesc[]" value="'+phasedesc+'" /><input type="hidden" name="phasemd[]" value="'+phaseintv+'" /></td></tr>');
-					$('#phasetable table tbody').append(data);
-					pfw_addTableCounter($('#phasetable table tbody tr'));
+					appendPhase(phasename,phasedesc, phaseintv );
 					$('.txt_phasename',prt).val('').focus();
 					$('.txt_phasedesc,.txt_phaseint',prt).val('');
+				}
+				function appendPhase(phasename,phasedesc, phaseintv ) {
+					if ($('#phasetable table tbody tr[data-phase="'+phasename+'"]').length>0) {
+						$('#phasetable table tbody tr[data-phase="'+phasename+'"]').remove();
+					}	
+					var data = $('<tr data-phase="'+phasename+'"><td class="text-left" style="width: 20px;"></td><td class="text-left" style="width: 100px;">'+phasename+'</td><td class="text-left" style="width: 40px;">'+phaseintv+'</td><td class="text-left" style="width: 30px;"><a class="icon-arrow-up" onclick="moveRowUp(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-arrow-down" onclick="moveRowDown(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-cancel-2 icon-red" href="#" onclick="removeRow(this); return false;" ></a><input type="hidden" name="phasename[]" value="'+phasename+'" /><input type="hidden" name="phasedesc[]" value="'+phasedesc+'" /><input type="hidden" name="phasemd[]" value="'+phaseintv+'" /></td></tr>');
+					$('#phasetable table tbody').append(data);
+					pfw_addTableCounter($('#phasetable table tbody tr'));
 				}
 				function moveRowUp(obj) {
 					var o = $(obj).closest('tr');
@@ -266,6 +272,25 @@ include '../../model/currency.php';
 </form>
 
 <script type="text/javascript">
+	<?php
+		$confAll = $_config->all();
+		$arrPhase = Array();
+		foreach($confAll as $k => $v) {
+			if (strrpos($k, 'phase_', -strlen($k)) !== FALSE) {
+				$arrPhase[] = '{"name":"'.str_replace('phase_','',$k).'","val":'.$v.'}';
+			}	
+		}
+		echo 'var phase_data = ['.implode(',',$arrPhase).'];';
+	?>
+	function calculatePhases(){
+		var src = parseInt($('input[name="estimatedmanhour"]').val(),10);
+		for(var x=0; x<phase_data.length; x++) {
+			 var amt = (phase_data[x].val*src/100).toFixed(1);
+			//var amt = Math.round(-phase_data[x].val*src/100)*-1;
+			amt = amt.toString().replace('.0','');
+			appendPhase(phase_data[x].name,'', amt) ;
+		}
+	}
 	$(function(){
 		$('#btnDelete').click(function(){
 			if (confirm("You are going to delete "+$('.checkItemToggle:checked').length+" item(s).\nAre you sure?")) {

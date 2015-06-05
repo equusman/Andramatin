@@ -8,4 +8,4 @@ include 'forms/header.php';
     Error <small class="on-right">404</small>
 </h1>
 Sorry, the page you are looking for is not found.<br/>
-<?php include 'forms/footer.php'; ?>
+<?php include 'forms/footer.php'; ?> 
