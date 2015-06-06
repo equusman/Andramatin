@@ -115,7 +115,7 @@ if  (isset($_GET['debug'])) {
 		<th>Estimated Man Hour *</th>
 		<td colspan=2>
 			<div class="input-control text" data-role="input-control">
-				<input type="text" name="estimatedmanhour" value="<?php echo $project['EstimatedManHour'];?>">
+				<input type="text" name="estimatedmanhour" value="<?php echo $project['EstimatedManHour'];?>" onblur="calculatePhases()">
 				<button class="btn-clear" tabindex="-1"></button>
 			</div>
 		</td>
@@ -244,7 +244,7 @@ if  (isset($_GET['debug'])) {
 								foreach ($phase as $ph) { 
 								$cek = Array('phase_id'=>$ph['PhaseID'],'project_id'=>$ph['ProjectID']);
 								?> 
-									<tr><td class="text-left" style="width: 20px;"><?php echo $c;?></td><td class="text-left" style="width: 100px;"><?php echo $ph['NAME'];?></td>
+									<tr data-phase="<?php echo $ph['NAME']; ?>"><td class="text-left" style="width: 20px;"><?php echo $c;?></td><td class="text-left" style="width: 100px;"><?php echo $ph['NAME'];?></td>
 									<td class="text-left" style="width: 40px;"><?php echo $ph['EstimatedManHour'];?></td>
 									<td class="text-left" style="width: 40px;"><?php echo hasTask($cek);?></td><td class="text-left" style="width: 30px;">
 									<a class="icon-arrow-up" onclick="moveRowUp(this); return false;"></a></td>
@@ -293,11 +293,20 @@ if  (isset($_GET['debug'])) {
 					var phasename = $('.txt_phasename',prt).val();
 					var phasedesc = $('.txt_phasedesc',prt).val();
 					var phaseint = $('.txt_phaseint',prt).val();
-					var data = $('<tr><td class="text-left" style="width: 20px;"></td><td class="text-left" style="width: 100px;">'+phasename+'</td><td class="text-left" style="width: 40px;">'+phaseint+'</td><td class="text-left" style="width: 40px;">0</td><td class="text-left" style="width: 30px;"><a class="icon-arrow-up" onclick="moveRowUp(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-arrow-down" onclick="moveRowDown(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-cancel-2 icon-red" href="#" onclick="removeRow(this); return false;" ></a><input type="hidden" name="projectid[]" value="<?php echo $project['ProjectID'];?>" /><input type="hidden" name="phaseid[]" value="new" /><input type="hidden" name="phasename[]" value="'+phasename+'" /><input type="hidden" name="phasedesc[]" value="'+phasedesc+'" /><input type="hidden" name="phasemd[]" value="'+phaseint+'" /><input type="hidden" name="newphase[]" value="1" /></td></tr>');
+					appendPhase(phasename,phasedesc,phaseint);
+					//var data = $('<tr><td class="text-left" style="width: 20px;"></td><td class="text-left" style="width: 100px;">'+phasename+'</td><td class="text-left" style="width: 40px;">'+phaseint+'</td><td class="text-left" style="width: 40px;">0</td><td class="text-left" style="width: 30px;"><a class="icon-arrow-up" onclick="moveRowUp(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-arrow-down" onclick="moveRowDown(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-cancel-2 icon-red" href="#" onclick="removeRow(this); return false;" ></a><input type="hidden" name="projectid[]" value="<?php echo $project['ProjectID'];?>" /><input type="hidden" name="phaseid[]" value="new" /><input type="hidden" name="phasename[]" value="'+phasename+'" /><input type="hidden" name="phasedesc[]" value="'+phasedesc+'" /><input type="hidden" name="phasemd[]" value="'+phaseint+'" /><input type="hidden" name="newphase[]" value="1" /></td></tr>');
 					$('#phasetable table tbody').append(data);
 					pfw_addTableCounter($('#phasetable table tbody tr'));
 					$('.txt_phasename',prt).val('').focus();
 					$('.txt_phasedesc,.txt_phaseint',prt).val('');
+				}
+				function appendPhase(phasename,phasedesc,phaseint) {
+					if ($('#phasetable table tbody tr[data-phase="'+phasename+'"]').length>0) {
+						$('#phasetable table tbody tr[data-phase="'+phasename+'"]').remove();
+					}	
+					var data = $('<tr data-phase="'+phasename+'"><td class="text-left" style="width: 20px;"></td><td class="text-left" style="width: 100px;">'+phasename+'</td><td class="text-left" style="width: 40px;">'+phaseint+'</td><td class="text-left" style="width: 40px;">0</td><td class="text-left" style="width: 30px;"><a class="icon-arrow-up" onclick="moveRowUp(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-arrow-down" onclick="moveRowDown(this); return false;"></a></td><td class="text-left" style="width: 30px;"><a class="icon-cancel-2 icon-red" href="#" onclick="removeRow(this); return false;" ></a><input type="hidden" name="projectid[]" value="<?php echo $project['ProjectID'];?>" /><input type="hidden" name="phaseid[]" value="new" /><input type="hidden" name="phasename[]" value="'+phasename+'" /><input type="hidden" name="phasedesc[]" value="'+phasedesc+'" /><input type="hidden" name="phasemd[]" value="'+phaseint+'" /><input type="hidden" name="newphase[]" value="1" /></td></tr>');
+					$('#phasetable table tbody').append(data);
+					pfw_addTableCounter($('#phasetable table tbody tr'));
 				}
 				function moveRowUp(obj) {
 					var o = $(obj).closest('tr');
@@ -332,6 +341,25 @@ if  (isset($_GET['debug'])) {
 </form>
 
 <script type="text/javascript">
+	<?php
+		$confAll = $_config->all();
+		$arrPhase = Array();
+		foreach($confAll as $k => $v) {
+			if (strrpos($k, 'phase_', -strlen($k)) !== FALSE) {
+				$arrPhase[] = '{"name":"'.str_replace('phase_','',$k).'","val":'.$v.'}';
+			}	
+		}
+		echo 'var phase_data = ['.implode(',',$arrPhase).'];';
+	?>
+	function calculatePhases(){
+		var src = parseInt($('input[name="estimatedmanhour"]').val(),10);
+		for(var x=0; x<phase_data.length; x++) {
+			 var amt = (phase_data[x].val*src/100).toFixed(1);
+			//var amt = Math.round(-phase_data[x].val*src/100)*-1;
+			amt = amt.toString().replace('.0','');
+			appendPhase(phase_data[x].name,'', amt) ;
+		}
+	}
 	$(function(){
 		$('#btnDelete').click(function(){
 			if (confirm("You are going to delete "+$('.checkItemToggle:checked').length+" item(s).\nAre you sure?")) {
