@@ -6487,3 +6487,118 @@ ORDER BY dateschedule.tanggal,dateschedule.userid in D:\wampserver\www\phpfw_deb
 2015-06-07 4:07:35 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\editproject.php on line 88 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
 2015-06-07 4:08:17 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\projectnew.php on line 58 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
 2015-06-07 5:58:16 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\projectnew.php on line 58 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
+2015-06-07 7:03:42 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\editproject.php on line 88 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
+2015-06-07 7:05:44 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\editproject.php on line 88 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
+2015-06-17 11:43:57 - PHP Warning:  Missing argument 1 for getAllUsers(), called in D:\wampserver\www\Andramatin\ts\forms\amts\editproject.php on line 88 and defined in D:\wampserver\www\Andramatin\ts\model\user.php on line 23
+2015-06-17 11:45:02 - PHP Notice:  Error: Erreur de syntaxe près de 'AND a.phaseid = '1' ) as tasklist
+		  LIMIT 0, 10' à la ligne 11<br />Error No: 1064<br />	 select * from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from amtsproject pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from amtsproject pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM amtstask t WHERE t.activityid = a.activityid) AS actualhour
+	FROM amtsactivity a  AND a.phaseid = '1' ) as tasklist
+		  LIMIT 0, 10 in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51
+2015-06-17 11:52:47 - PHP Notice:  Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.phaseid = '1' ) as tasklist
+		  LIMIT 0, 10' at line 11<br />Error No: 1064<br />	 select * from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from amtsproject pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from amtsproject pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM amtstask t WHERE t.activityid = a.activityid) AS actualhour
+	FROM amtsactivity a  AND a.phaseid = '1' ) as tasklist
+		  LIMIT 0, 10 in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51
+2015-06-18 8:58:54 - PHP Notice:  Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.phaseid = '1' ) as tasklist
+		  LIMIT 0, 10' at line 11<br />Error No: 1064<br />	 select * from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from amtsproject pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from amtsproject pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM amtstask t WHERE t.activityid = a.activityid) AS actualhour
+	FROM amtsactivity a  AND a.phaseid = '1' ) as tasklist
+		  LIMIT 0, 10 in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51
+2015-06-18 8:59:34 - PHP Notice:  Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.phaseid = '1' ) as tasklist
+		  LIMIT 0, 10' at line 11<br />Error No: 1064<br />	 select * from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from amtsproject pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from amtsproject pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM amtstask t WHERE t.activityid = a.activityid) AS actualhour
+	FROM amtsactivity a  AND a.phaseid = '1' ) as tasklist
+		  LIMIT 0, 10 in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51
+2015-06-18 10:51:50 - PHP Notice:  Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.phaseid = '1' ) as tasklist' at line 11<br />Error No: 1064<br />	 select COUNT(activityid) as total from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from amtsproject pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from amtsproject pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM amtstask t WHERE t.activityid = a.activityid) AS actualhour
+	FROM amtsactivity a  AND a.phaseid = '1' ) as tasklist
+		 in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51
+2015-06-18 11:24:48 - PHP Notice:  Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.phaseid = '1' ) as tasklist' at line 11<br />Error No: 1064<br />	 select COUNT(activityid) as total from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from amtsproject pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from amtsproject pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM amtstask t WHERE t.activityid = a.activityid) AS actualhour
+	FROM amtsactivity a  AND a.phaseid = '1' ) as tasklist
+		 in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51
+2015-06-22 8:44:48 - PHP Notice:  Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.phaseid = '1' ) as tasklist' at line 11<br />Error No: 1064<br />	 select COUNT(activityid) as total from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from amtsproject pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from amtsproject pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM amtstask t WHERE t.activityid = a.activityid) AS actualhour
+	FROM amtsactivity a  AND a.phaseid = '1' ) as tasklist
+		 in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51
+2015-06-22 8:46:30 - PHP Notice:  Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.phaseid = '1' ) as tasklist' at line 11<br />Error No: 1064<br />	 select COUNT(activityid) as total from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from amtsproject pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from amtsproject pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM amtstask t WHERE t.activityid = a.activityid) AS actualhour
+	FROM amtsactivity a  AND a.phaseid = '1' ) as tasklist
+		 in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51
+2015-06-22 8:47:35 - PHP Notice:  Error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND a.phaseid = '1' ) as tasklist' at line 11<br />Error No: 1064<br />	 select COUNT(activityid) as total from (
+	SELECT a.activityid,a.phaseid,
+	(select IFNULL(ph.name,'') from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as phasename,
+	a.projectid,(select IFNULL(pr.name,'') from amtsproject pr where pr.projectid=a.projectid) as projectname,
+	(select IFNULL(pr.projectnumber,'') from amtsproject pr where pr.projectid=a.projectid) as projectnumber,
+	a.name,a.description,a.schedulestart,a.scheduleend,a.multipletask,
+	(select IFNULL(ph.estimatedmanhour,0) from amtsphase ph where a.phaseid = ph.phaseid and ph.projectid = a.projectid) as estimated,
+		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
+		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
+		FROM amtstask t WHERE t.activityid = a.activityid) AS actualhour
+	FROM amtsactivity a  AND a.phaseid = '1' ) as tasklist
+		 in D:\wampserver\www\Andramatin\ts\database\mysql.php on line 51

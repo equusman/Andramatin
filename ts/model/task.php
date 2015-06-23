@@ -1175,7 +1175,7 @@ function getMyOpenActivityActivity($data){
 	
 	// Filters 
 	$filter_activity = isset($data['filter_activity']) && !empty($data['filter_activity'])? ' WHERE tasklist.name LIKE \'%'.$_db->escape($data['filter_activity']).'%\' OR tasklist.description LIKE \'%'.$_db->escape($data['filter_activity']).'%\' ' : '';
-	$filter_project = isset($data['filter_projectid']) && !empty($data['filter_projectid'])? ' WHERE a.projectid = \''.$_db->escape($data['filter_projectid']).'\'' : '';
+	$filter_project = isset($data['filter_projectid']) && !empty($data['filter_projectid'])? ' AND a.projectid = \''.$_db->escape($data['filter_projectid']).'\'' : '';
 	$filter_phase = isset($data['filter_phaseid']) && !empty($data['filter_phaseid'])? ' AND a.phaseid = \''.$_db->escape($data['filter_phaseid']).'\'' : '';
 	
 	// Paging
@@ -1197,7 +1197,7 @@ function getMyOpenActivityActivity($data){
 		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
 		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
 		FROM " . DB_PREFIX_APP . "task t WHERE t.activityid = a.activityid) AS actualhour
-	FROM " . DB_PREFIX_APP . "activity a ".$filter_project.$filter_phase." ) as tasklist
+	FROM " . DB_PREFIX_APP . "activity a WHERE 1=1 ".$filter_project.$filter_phase." ) as tasklist
 		".$filter_activity.$limit);
 	
 	if ($user_query->num_rows) { 
@@ -1213,7 +1213,7 @@ function getMyOpenActivityActivityTotal($data){
 	
 	// Filters 
 	$filter_activity = isset($data['filter_activity']) && !empty($data['filter_activity'])? ' WHERE tasklist.name LIKE \'%'.$_db->escape($data['filter_activity']).'%\' OR tasklist.description LIKE \'%'.$_db->escape($data['filter_activity']).'%\' ' : '';
-	$filter_project = isset($data['filter_projectid']) && !empty($data['filter_projectid'])? ' WHERE a.projectid = \''.$_db->escape($data['filter_projectid']).'\'' : '';
+	$filter_project = isset($data['filter_projectid']) && !empty($data['filter_projectid'])? ' AND a.projectid = \''.$_db->escape($data['filter_projectid']).'\'' : '';
 	$filter_phase = isset($data['filter_phaseid']) && !empty($data['filter_phaseid'])? ' AND a.phaseid = \''.$_db->escape($data['filter_phaseid']).'\'' : '';
 	
 	//get user id
@@ -1230,7 +1230,7 @@ function getMyOpenActivityActivityTotal($data){
 		(SELECT IFNULL(SUM(TIMESTAMPDIFF(HOUR,STR_TO_DATE(CONCAT(t.startdate, ' ', t.timefrom),'%Y-%m-%d %H:%i:%s'),
 		STR_TO_DATE(CONCAT(t.startdate, ' ', IFNULL(t.timeto,NOW())), '%Y-%m-%d %H:%i:%s'))),0) 
 		FROM " . DB_PREFIX_APP . "task t WHERE t.activityid = a.activityid) AS actualhour
-	FROM " . DB_PREFIX_APP . "activity a ".$filter_project.$filter_phase." ) as tasklist
+	FROM " . DB_PREFIX_APP . "activity a WHERE 1=1 ".$filter_project.$filter_phase." ) as tasklist
 		".$filter_activity);
 
 	if ($opentask_query->num_rows) { 
